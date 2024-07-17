@@ -25,10 +25,9 @@ var redisDatabase = redisConnection.GetDatabase();
 var rabbitFactory = new ConnectionFactory { HostName = "localhost", UserName = "user", Password = "password" };
 
 builder.Services.AddScheduler();
-builder.Services.AddScoped<OpenWeatherMap>();
 builder.Services.AddSingleton<AppSettings>(env);
-builder.Services.AddScoped<HourlyWeatherTask>();
 builder.Services.AddScoped<WeatherReportChannel>();
+builder.Services.AddScoped<HourlyWeatherRequestTask>();
 builder.Services.AddSingleton<IDatabase>(redisDatabase);
 builder.Services.AddScoped<IRedisDatabase, RedisDatabase>();
 builder.Services.AddSingleton<ConnectionFactory>(rabbitFactory);
@@ -42,7 +41,7 @@ var app = builder.Build();
 });
  */
 
-await app.Services.GetService<HourlyWeatherTask>()!.Invoke();
+await app.Services.GetService<HourlyWeatherRequestTask>()!.Invoke();
 
 /* var messageSender = app.Services.GetService<RabbitMessageQueue>()!; */
 /* await messageSender.SendMessage(); */
