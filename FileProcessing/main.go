@@ -1,6 +1,9 @@
 package main
 
 import (
+	"encoding/json"
+	"fileprocessing/models"
+	"fileprocessing/process"
 	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -25,7 +28,11 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			var report []models.WeatherReport;
+			err := json.Unmarshal(d.Body, &report);
+			if(err != nil) { panic(err) }
+			log.Println("Received hourly report.")
+			process.ToCsv(report);
 		}
 	}()
 

@@ -1,0 +1,11 @@
+Location,Time,Temp,Humidity,Pressure,WindSpeed,Latitude,Longitude,WeatherId,Main,Description
+Miami,1721246188,306.06,64,1017,6.17,25.78330,-80.25980,802,Clouds,scattered clouds
+Salvador,1721246189,298.84,69,1020,5.52,-12.97770,-38.50160,800,Clear,clear sky
+Sydney,1721245924,282.24,82,1012,4.63,-33.86880,151.20930,801,Clouds,few clouds
+Shibuya,1721245983,298.33,88,1011,2.57,35.68950,139.69170,803,Clouds,broken clouds
+London,1721245846,293.52,70,1021,3.58,51.50730,-0.12760,804,Clouds,overcast clouds
+Miami,1721246188,306.06,64,1017,6.17,25.78330,-80.25980,802,Clouds,scattered clouds
+Salvador,1721246189,298.84,69,1020,5.52,-12.97770,-38.50160,800,Clear,clear sky
+Sydney,1721245924,282.24,82,1012,4.63,-33.86880,151.20930,801,Clouds,few clouds
+Shibuya,1721245983,298.33,88,1011,2.57,35.68950,139.69170,803,Clouds,broken clouds
+London,1721245846,293.52,70,1021,3.58,51.50730,-0.12760,804,Clouds,overcast clouds
