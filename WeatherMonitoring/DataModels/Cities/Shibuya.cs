@@ -2,13 +2,13 @@
 
 namespace WeatherMonitoring.DataModels.Cities
 {
-	public struct Tokyo : ICity
+	public struct Shibuya : ICity
 	{
-		public string Name { get; set; } = "Tokyo";
+		public string Name { get; set; } = "Shibuya";
 		public double Latitude { get; set; }
 		public double Longitude { get; set; }
 
-		public Tokyo()
+		public Shibuya()
 		{
 			Latitude = 35.689487;
 			Longitude = 139.691711;
