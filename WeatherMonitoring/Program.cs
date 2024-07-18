@@ -1,14 +1,15 @@
 ﻿using Serilog;
-using WeatherMonitoring;
-using StackExchange.Redis;
-using WeatherMonitoring.Utilities;
-using Microsoft.Extensions.Configuration;
-using WeatherMonitoring.DataModels.Cities;
-using Microsoft.Extensions.DependencyInjection;
-using RabbitMQ.Client;
 using Coravel;
-using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client;
+using StackExchange.Redis;
 using WeatherMonitoring.Tasks;
+using WeatherMonitoring.Rabbit;
+using WeatherMonitoring.Utilities;
+using WeatherMonitoring.Interfaces;
+using Microsoft.Extensions.Hosting;
+using WeatherMonitoring.Data.Database;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = Host.CreateApplicationBuilder();
 
@@ -25,25 +26,21 @@ var redisDatabase = redisConnection.GetDatabase();
 var rabbitFactory = new ConnectionFactory { HostName = "localhost", UserName = "user", Password = "password" };
 
 builder.Services.AddScheduler();
-builder.Services.AddSingleton<AppSettings>(env);
+builder.Services.AddSerilog((services, lc) => lc.ReadFrom.Configuration(configuration).ReadFrom.Services(services));
+
 builder.Services.AddScoped<WeatherReportChannel>();
 builder.Services.AddScoped<HourlyWeatherRequestTask>();
-builder.Services.AddSingleton<IDatabase>(redisDatabase);
 builder.Services.AddScoped<IRedisDatabase, RedisDatabase>();
+
+builder.Services.AddSingleton<AppSettings>(env);
+builder.Services.AddSingleton<IDatabase>(redisDatabase);
 builder.Services.AddSingleton<ConnectionFactory>(rabbitFactory);
-builder.Services.AddSerilog((services, lc) => lc.ReadFrom.Configuration(configuration).ReadFrom.Services(services));
 
 var app = builder.Build();
 
-/* app.Services.UseScheduler(scheduler =>
+app.Services.UseScheduler(scheduler =>
 {
-	scheduler.Schedule<HourlyWeatherRequest>().EveryFiveSeconds();
+	scheduler.Schedule<HourlyWeatherRequestTask>().HourlyAt(30);
 });
- */
-
-await app.Services.GetService<HourlyWeatherRequestTask>()!.Invoke();
-
-/* var messageSender = app.Services.GetService<RabbitMessageQueue>()!; */
-/* await messageSender.SendMessage(); */
 
 app.Run();

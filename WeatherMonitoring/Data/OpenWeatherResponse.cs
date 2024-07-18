@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Text.Json.Serialization;
+
 namespace WeatherMonitoring.Data
 {
 	public class OpenWeatherResponse
@@ -15,7 +16,7 @@ namespace WeatherMonitoring.Data
 		public required string Name { get; set; }
 		public required Coord Coord { get; set; }
 		public required Clouds Clouds { get; set; }
-		public required List<Weather> Weather { get; set; }
+		public required List<OWeather> Weather { get; set; }
 	}
 
 	public class Coord
@@ -23,8 +24,7 @@ namespace WeatherMonitoring.Data
 		public float Lon { get; set; }
 		public float Lat { get; set; }
 	}
-
-	public class Weather
+	public class OWeather
 	{
 		public int Id { get; set; }
 		public required string Main { get; set; }

@@ -1,10 +1,11 @@
-﻿using System.Net.Http.Json;
+﻿using Serilog;
 using Coravel.Invocable;
-using Serilog;
+using System.Net.Http.Json;
 using WeatherMonitoring.Data;
-using WeatherMonitoring.DataModels.Cities;
-using WeatherMonitoring.Interfaces;
+using WeatherMonitoring.Rabbit;
 using WeatherMonitoring.Utilities;
+using WeatherMonitoring.Interfaces;
+using WeatherMonitoring.DataModels.Cities;
 
 namespace WeatherMonitoring.Tasks
 {
@@ -16,15 +17,17 @@ namespace WeatherMonitoring.Tasks
 
 		public async Task Invoke()
 		{
-			Log.Information($"Hourly weather report task triggered.");
+			Log.Information($"Requesting hourly weather report . . .");
 			List<ICity> targetCities = [new Miami(), new Salvador(), new Sydney(), new Shibuya(), new London()];
 			List<WeatherReport> reports = [];
 			foreach (var city in targetCities)
 			{
-				Log.Information($"{city.Name} hourly weather report requested!");
+				Log.Information($"{city.Name} hourly weather report requested.");
 				string url = $"{env.BaseURL}?lat={city.Latitude}&lon={city.Longitude}&appid={env.OpenWeatherApiKey}";
 				using var http = new HttpClient();
-				var data = await http.GetFromJsonAsync<OpenWeatherResponse>(url) ?? throw new Exception($"{city.Name} failed. Unable to recover data from API.");
+				var data = await http.GetFromJsonAsync<OpenWeatherResponse>(url) ??
+				throw new Exception($"Failed to request {city.Name} weather from api");
+
 				Weather weather = new()
 				{
 					WeatherId = data.Weather[0].Id,
@@ -46,7 +49,7 @@ namespace WeatherMonitoring.Tasks
 				};
 
 				var key = await redis.PushHourlyReport(city.Name, weatherReport);
-				Log.Information($"{key} created!");
+				Log.Information($"{city.Name} report created - {key}");
 				reports.Add(weatherReport);
 			}
 			await reportChannel.SendHourlyReport(reports);
