@@ -1,7 +1,7 @@
 services:
     redis:
         image: redis:latest
-        container_name: redis-daily-storage
+        container_name: weather-monitoring-hourly
         ports:
             - "6379:6379"
     rabbitmq:
@@ -16,6 +16,15 @@ services:
         volumes:
             - rabbitmq_data:/var/lib/rabbitmq
             - rabbitmq_log:/var/log/rabbitmq
+    mongo:
+        image: mongo
+        restart: always
+        container_name: weather-monitoring-daily
+        ports:
+            - "27017:27017"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: dev
+            MONGO_INITDB_ROOT_PASSWORD: dev
 
 volumes:
     rabbitmq_data:

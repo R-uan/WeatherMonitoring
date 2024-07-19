@@ -5,7 +5,7 @@ using WeatherMonitoring.Data;
 using WeatherMonitoring.Rabbit;
 using WeatherMonitoring.Utilities;
 using WeatherMonitoring.Interfaces;
-using WeatherMonitoring.DataModels.Cities;
+using WeatherMonitoring.Data.Models;
 
 namespace WeatherMonitoring.Tasks
 {
@@ -18,9 +18,8 @@ namespace WeatherMonitoring.Tasks
 		public async Task Invoke()
 		{
 			Log.Information($"Requesting hourly weather report . . .");
-			List<ICity> targetCities = [new Miami(), new Salvador(), new Sydney(), new Shibuya(), new London()];
 			List<WeatherReport> reports = [];
-			foreach (var city in targetCities)
+			foreach (var city in TargetCities.All)
 			{
 				Log.Information($"{city.Name} hourly weather report requested.");
 				string url = $"{env.BaseURL}?lat={city.Latitude}&lon={city.Longitude}&appid={env.OpenWeatherApiKey}";
@@ -37,6 +36,7 @@ namespace WeatherMonitoring.Tasks
 
 				WeatherReport weatherReport = new()
 				{
+					Date = DateTime.Now,
 					Location = city.Name,
 					Humidity = data.Main.Humidity,
 					Latitude = data.Coord.Lat,

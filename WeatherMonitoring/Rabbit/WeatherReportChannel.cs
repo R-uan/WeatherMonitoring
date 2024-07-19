@@ -2,7 +2,7 @@
 using System.Text;
 using RabbitMQ.Client;
 using System.Text.Json;
-using WeatherMonitoring.Data;
+using WeatherMonitoring.Data.Models;
 
 namespace WeatherMonitoring.Rabbit
 {
