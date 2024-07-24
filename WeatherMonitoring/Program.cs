@@ -16,11 +16,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = Host.CreateApplicationBuilder();
 
+Console.WriteLine("Hello there");
 var env = new AppSettings();
 var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
 configuration.GetSection("AppSettings").Bind(env);
-
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 Log.Debug("Starting the application . . .");
 
@@ -47,8 +47,6 @@ builder.Services.AddSingleton<IDatabase>(redisDatabase);
 builder.Services.AddSingleton<ConnectionFactory>(rabbitFactory);
 
 var app = builder.Build();
-await app.Services.GetService<CalculateDailyAverageTask>()!.Invoke();
-
 app.Services.UseScheduler(scheduler =>
 {
 	scheduler.Schedule<HourlyWeatherRequestTask>().HourlyAt(30);

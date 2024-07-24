@@ -18,7 +18,7 @@ namespace WeatherMonitoring.Tasks
 			{
 				var average = new DailyAverage();
 				var day = await redis.YesterdayReports(city.Name);
-				if (day != null)
+				if (day != null && day.Count > 0)
 				{
 					int reportSize = day.Count;
 
@@ -46,6 +46,5 @@ namespace WeatherMonitoring.Tasks
 				await db.SaveChangesAsync();
 			}
 		}
-
 	}
 }
