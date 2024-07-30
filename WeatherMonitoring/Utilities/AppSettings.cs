@@ -4,5 +4,6 @@
 	{
 		public string? BaseURL { get; set; }
 		public string? OpenWeatherApiKey { get; set; }
+		public string? DiscordToken { get; set; }
 	}
 }

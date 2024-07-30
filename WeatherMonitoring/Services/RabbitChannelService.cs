@@ -3,10 +3,11 @@ using System.Text;
 using RabbitMQ.Client;
 using System.Text.Json;
 using WeatherMonitoring.Data.Models;
+using WeatherMonitoring.Interfaces.Services;
 
-namespace WeatherMonitoring.Rabbit
+namespace WeatherMonitoring.Services
 {
-	public class WeatherReportChannel(ConnectionFactory factory)
+	public class RabbitChannelService(ConnectionFactory factory) : IRabbitChannelService
 	{
 		private readonly ConnectionFactory rabbitFactory = factory;
 

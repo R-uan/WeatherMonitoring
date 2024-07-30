@@ -1,34 +1,30 @@
 ﻿using Serilog;
 using Coravel.Invocable;
-using System.Net.Http.Json;
 using WeatherMonitoring.Data;
-using WeatherMonitoring.Rabbit;
-using WeatherMonitoring.Utilities;
 using WeatherMonitoring.Interfaces;
 using WeatherMonitoring.Data.Models;
+using WeatherMonitoring.Interfaces.Services;
 
 namespace WeatherMonitoring.Tasks
 {
-	public class HourlyWeatherRequestTask(IRedisDatabase database, AppSettings settings, WeatherReportChannel channel) : IInvocable
+	public class HourlyWeatherRequestTask(IRedisDatabase database, IRabbitChannelService rabbitChannel, IWeatherRequestService weatherService) : IInvocable
 	{
-		private readonly AppSettings env = settings;
+		public bool Activated { get; set; } = true;
 		private readonly IRedisDatabase redis = database;
-		private readonly WeatherReportChannel reportChannel = channel;
+		private readonly IRabbitChannelService _rabbitChannel = rabbitChannel;
+		private readonly IWeatherRequestService _weatherService = weatherService;
 
 		public async Task Invoke()
 		{
+			if (!Activated) return;
 			try
 			{
 				Log.Information($"Requesting hourly weather report . . .");
 				List<WeatherReport> reports = [];
+
 				foreach (var city in TargetCities.All)
 				{
-					Log.Information($"{city.Name} hourly weather report requested.");
-					string url = $"{env.BaseURL}?lat={city.Latitude}&lon={city.Longitude}&appid={env.OpenWeatherApiKey}";
-					Console.WriteLine(url);
-					using var http = new HttpClient();
-					var data = await http.GetFromJsonAsync<OpenWeatherResponse>(url) ??
-					throw new Exception($"Failed to request {city.Name} weather from api");
+					var data = await _weatherService.RequestCityWeather(city);
 
 					Weather weather = new()
 					{
@@ -36,7 +32,6 @@ namespace WeatherMonitoring.Tasks
 						Main = data.Weather[0].Main,
 						Description = data.Weather[0].Description
 					};
-
 					WeatherReport weatherReport = new()
 					{
 						Date = DateTime.Now,
@@ -55,8 +50,8 @@ namespace WeatherMonitoring.Tasks
 					Log.Information($"{city.Name} report created - {key}");
 					reports.Add(weatherReport);
 				}
-				await reportChannel.SendHourlyReport(reports);
-				await Task.CompletedTask;
+
+				await _rabbitChannel.SendHourlyReport(reports);
 			}
 			catch (System.Exception ex)
 			{
