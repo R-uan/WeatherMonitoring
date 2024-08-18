@@ -32,6 +32,7 @@ namespace WeatherMonitoring.Tasks
 						Main = data.Weather[0].Main,
 						Description = data.Weather[0].Description
 					};
+
 					WeatherReport weatherReport = new()
 					{
 						Date = DateTime.Now,

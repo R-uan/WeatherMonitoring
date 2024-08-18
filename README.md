@@ -1,9 +1,5 @@
 # Weather Monitoring - Documentation in progress
-## Basic Summary
-### C# (ASP.NET Core)
-Weather application that periodically requests data from an third party api and makes a daily summary based on the hourly requests made thought the day and stores it on a Mongo database. 
-### Golang
-There's some Golang here because I wanted to try RabbitMQ to do real time communication between applications and get familiarized with the language. The program receives 
-the data trough the rabbit channel and appends it on the specific CSV file from that day.
-### Rust
-Maybe I'll find a way to use rust in this, maybe not. Idk ¯\\_(ツ)_/¯
+
+## Summary
+
+The application utilizes of a task scheduler (Coravel) that requests the data about five different selected cities from the OpenWeatherAPI. Once retrieved, the data is first stored on a Redis database and sent through the message broker (RabbitMQ) to the Golang application that inserts the data on a file dedicated for each city. Later, the redis data is retrieved to create a daily report for each city average where it will be stored on a MongoDB database.
